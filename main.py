@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 
 class NeuralNetwork():
@@ -14,6 +16,28 @@ class NeuralNetwork():
     def sigmoid_derivative(self, x):
         return x * (1 - x)
 
+    def plot(func):
+
+        fig, axis = plt.subplots()
+
+        def wrapper(*args, **kwargs):
+
+            def animate(i):
+
+                func(*args, **kwargs)
+
+                error_curve = axis.plot(np.linspace(0,10000,100), error)
+                axis.set(xlabel="epochs", ylabel="error", title="NN")
+
+                return error_curve
+
+            ani = animation.FuncAnimation(fig, animate, interval=1,
+                    blit=False, repeat=False, frames=1000)
+            plt.show()
+
+        return wrapper
+
+    @plot
     def train(self, training_inputs, training_outputs, training_iterations):
 
         for iteration in range(training_iterations):
@@ -33,7 +57,7 @@ class NeuralNetwork():
 
 
 if __name__ == "__main__":
-
+    error
     neural_network = NeuralNetwork()
 
     print("Random synaptic weights: ")
