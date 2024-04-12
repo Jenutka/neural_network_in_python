@@ -7,7 +7,7 @@ class NeuralNetwork():
 
     def __init__(self):
         np.random.seed(1)
-
+        self.learning_data = []
         self.synaptic_weights = 2 * np.random.random((3, 1)) - 1
 
     def sigmoid(self, x):
@@ -16,33 +16,12 @@ class NeuralNetwork():
     def sigmoid_derivative(self, x):
         return x * (1 - x)
 
-    def plot(func):
-
-        fig, axis = plt.subplots()
-
-        def wrapper(*args, **kwargs):
-
-            def animate(i):
-
-                func(*args, **kwargs)
-
-                error_curve = axis.plot(np.linspace(0,10000,100), error)
-                axis.set(xlabel="epochs", ylabel="error", title="NN")
-
-                return error_curve
-
-            ani = animation.FuncAnimation(fig, animate, interval=1,
-                    blit=False, repeat=False, frames=1000)
-            plt.show()
-
-        return wrapper
-
-    @plot
     def train(self, training_inputs, training_outputs, training_iterations):
 
         for iteration in range(training_iterations):
 
             output = self.think(training_inputs)
+            self.learning_data.append(output)
             error = training_outputs - output
             adjustments = np.dot(training_inputs.T, error \
                                 * self.sigmoid_derivative(output))
@@ -57,7 +36,7 @@ class NeuralNetwork():
 
 
 if __name__ == "__main__":
-    error
+
     neural_network = NeuralNetwork()
 
     print("Random synaptic weights: ")
@@ -70,7 +49,23 @@ if __name__ == "__main__":
 
     training_outputs = np.array([[0,1,1,0]]).T
 
-    neural_network.train(training_inputs, training_outputs, 10000)
+    epochs = 1000
+
+    neural_network.train(training_inputs, training_outputs, epochs)
+
+    print("learning data: ")
+    print(neural_network.learning_data)
+
+    learning_example = []
+    for i in neural_network.learning_data:
+        learning_example.append(i[0][0])
+
+    print(learning_example)
+
+    fig, ax = plt.subplots()
+    ax.plot(np.arange(0.0, epochs, 1), learning_example)
+
+    plt.show()
 
     print("Synaptic weights after training: ")
     print(neural_network.synaptic_weights)
