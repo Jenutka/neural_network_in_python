@@ -8,6 +8,7 @@ class NeuralNetwork():
     def __init__(self):
         np.random.seed(1)
         self.learning_data = []
+        self.error_data = []
         self.synaptic_weights = 2 * np.random.random((3, 1)) - 1
 
     def sigmoid(self, x):
@@ -23,6 +24,7 @@ class NeuralNetwork():
             output = self.think(training_inputs)
             self.learning_data.append(output)
             error = training_outputs - output
+            self.error_data.append(error)
             adjustments = np.dot(training_inputs.T, error \
                                 * self.sigmoid_derivative(output))
             self.synaptic_weights += adjustments
@@ -53,14 +55,23 @@ if __name__ == "__main__":
 
     neural_network.train(training_inputs, training_outputs, epochs)
 
-    print("learning data: ")
-    print(neural_network.learning_data)
+    #print("learning data: ")
+    #print(neural_network.learning_data)
+
+    #print("error data: ")
+    #print(neural_network.error_data)
+
+    absolute_errors = [abs(ele) for ele in neural_network.error_data]
+    print(absolute_errors)
+
+    mean_error = [np.mean(err) for err in absolute_errors]
+    print(mean_error)
 
     learning_example = []
     for i in neural_network.learning_data:
         learning_example.append(i[0][0])
 
-    print(learning_example)
+    #print(learning_example)
 
     fig, ax = plt.subplots()
     ax.plot(np.arange(0.0, epochs, 1), learning_example)
