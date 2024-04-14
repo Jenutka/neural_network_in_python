@@ -7,7 +7,6 @@ class NeuralNetwork():
 
     def __init__(self):
         np.random.seed(1)
-        self.learning_data = []
         self.error_data = []
         self.synaptic_weights = 2 * np.random.random((3, 1)) - 1
 
@@ -17,17 +16,33 @@ class NeuralNetwork():
     def sigmoid_derivative(self, x):
         return x * (1 - x)
 
-    def train(self, training_inputs, training_outputs, training_iterations):
+    def plot_MAE(self, epochs, mae):
 
-        for iteration in range(training_iterations):
+        fig, ax = plt.subplots()
+        ax.plot(np.arange(0.0, epochs, 1), mae)
+
+        plt.show()
+
+    def train(self, training_inputs, training_outputs, epochs=10000,
+            plot=True):
+
+        for epoch in range(epochs):
 
             output = self.think(training_inputs)
-            self.learning_data.append(output)
+
             error = training_outputs - output
             self.error_data.append(error)
+
             adjustments = np.dot(training_inputs.T, error \
                                 * self.sigmoid_derivative(output))
             self.synaptic_weights += adjustments
+
+        absolute_errors = [abs(ele) for ele in self.error_data]
+
+        mean_absolute_error = [np.mean(err) for err in absolute_errors]
+
+        if plot:
+            self.plot_MAE(epochs, mean_absolute_error)
 
     def think(self, inputs):
 
@@ -51,32 +66,8 @@ if __name__ == "__main__":
 
     training_outputs = np.array([[0,1,1,0]]).T
 
-    epochs = 1000
-
-    neural_network.train(training_inputs, training_outputs, epochs)
-
-    #print("learning data: ")
-    #print(neural_network.learning_data)
-
-    #print("error data: ")
-    #print(neural_network.error_data)
-
-    absolute_errors = [abs(ele) for ele in neural_network.error_data]
-    print(absolute_errors)
-
-    mean_error = [np.mean(err) for err in absolute_errors]
-    print(mean_error)
-
-    learning_example = []
-    for i in neural_network.learning_data:
-        learning_example.append(i[0][0])
-
-    #print(learning_example)
-
-    fig, ax = plt.subplots()
-    ax.plot(np.arange(0.0, epochs, 1), learning_example)
-
-    plt.show()
+    neural_network.train(training_inputs, training_outputs, epochs=10000,
+            plot=True)
 
     print("Synaptic weights after training: ")
     print(neural_network.synaptic_weights)
